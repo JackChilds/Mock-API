@@ -1,4 +1,4 @@
-export default function fetchUser(req, res) {
+export default function id(req, res) {
     res.statusCode = 200;
     const { id } = req.query;
   
