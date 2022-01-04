@@ -17,16 +17,16 @@
             <div class="col">
                 <h1>Mock API Dashboard</h1>
                 <p>
-                    Generate a serverless Mock API project that can be deployed to Vercel.
+                    Quickly create and manage your Mock API URLs.
                 </p>
             </div>
         </div>
 
         <div class="row p-5" id="start-button-row">
             <div class="col">
-                <button class="btn btn-primary btn-lg shadow" onclick="newProject()">
-                    <i class="bi bi-plus-lg me-2"></i>
-                    New Mock API Project
+                <button class="btn btn-primary btn-lg shadow" onclick="openServerConfig()">
+                    <i class="bi bi-folder2-open"></i>
+                    Open existing configuration
                 </button>
 
                 <button class="ms-2 btn btn-primary btn-lg shadow">
@@ -37,24 +37,15 @@
         </div>
 
         <div id="dashboard-config-values" class="p-5 mt-4 rounded-corners shadow" style="display:none;">
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col">
-                    <button class="btn btn-light">
+                    <button class="btn btn-light" onclick="window.location.reload()">
                         <i class="bi bi-caret-left-fill"></i> Back
                     </button>
-
-                    <br><br>
-
-                    <h2>Mock API Project Configuration</h2>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-
-                    <input type="text" placeholder="Project Name" class="form-control" id="input-project-name">
-
-                    <br>
-
                     <h4>API URL Editor</h4>
                     <button class="btn btn-danger" onclick="newURL(this)" id="new-url-editor-btn">
                         <i class="bi bi-plus-lg me-2"></i>
@@ -77,6 +68,10 @@
                             <i class="bi bi-check-lg"></i>
                         </button>
 
+                        <div class="alert alert-danger mt-2" id="alert-newurl-endpoint-error" style="display:none">
+                            <b>Error:</b> you must specify a valid API URL.
+                        </div>
+
                         <div class="alert alert-info mt-2">
                             <b>Note:</b> do not add query strings to the end of the url, instead customise query data below.
                         </div>
@@ -87,6 +82,7 @@
                             <option value="POST">POST</option>
                             <option value="PUT">PUT</option>
                             <option value="DELETE">DELETE</option>
+                            <option value="HEAD">HEAD</option>
                         </select>
 
                         <br><br>
@@ -101,7 +97,7 @@
                                 <tr>
                                     <td>
                                         <button class="btn" onclick="removeNewURLQueryDataRow(this)">
-                                            <i class="bi bi-x"></i>
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
                                     <td contenteditable="true" data-placeholder="Name"></td>
@@ -126,7 +122,7 @@
 
                         <span><b>Response:</b></span>
                         <div class="mt-1 mb-2">
-                            <textarea id="api-endpoint-editor-response">{ "status": "success" }</textarea>
+                            <textarea id="api-endpoint-editor-response"></textarea>
                         </div>
 
                         <span><b>Output Response Data As:</b></span>
@@ -141,6 +137,7 @@
                             <tr>
                                 <th>URL</th>
                                 <th>Method</th>
+                                <th>Query Data</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -149,14 +146,14 @@
 
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-2">
                 <div class="col">
-                    <button class="btn btn-primary btn-lg mt-2 me-2">
-                        <i class="bi bi-file-earmark-text"></i> Generate Mock API Config File
+                    <button class="btn btn-primary btn-lg me-2">
+                        <i class="bi bi-github"></i>
+                        Commit Update to Github Repository
                     </button>
-
-                    <button class="btn btn-primary btn-lg mt-2">
-                        <i class="bi bi-file-earmark-zip"></i> Generate Serverless API Files
+                    <button class="btn btn-primary btn-lg me-2">
+                        <i class="bi bi-file-earmark-text"></i> Download Mock API Config File
                     </button>
                 </div>
             </div>
@@ -169,13 +166,6 @@
 
    
     <script src="js/main.js"></script>
-
-    <script>
-        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl)
-        })
-    </script>
 
 </body>
 </html>
