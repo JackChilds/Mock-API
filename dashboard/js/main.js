@@ -31,7 +31,7 @@ function validateAPIUrl(url) {
     let urlIsValid = true;
     if (url.includes('?')) {
         urlIsValid = false;
-        return;
+        return [false];
     }
     let urlParts = url.split('/');
     urlParts = urlParts.filter(function(el) {
@@ -61,6 +61,31 @@ const dashboardConfigValues = $('#dashboard-config-values');
 function openServerConfig() {
     startButtonRow.style.display = 'none';
     dashboardConfigValues.style.display = 'block';
+}
+
+function uploadConfig() {
+    Swal.fire({
+        title: 'Upload Config File',
+        html: '<input id="config_file_upload" type="file" accept="application/json" class="form-control">',
+    }).then ((r) => {
+        if (r.isConfirmed && $('#config_file_upload').files.length > 0) {
+            // read file as text with file reader API
+            const file = $('#config_file_upload').files[0];
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // parse the JSON
+                configuration = readConfigFile(e.target.result);
+
+                startButtonRow.style.display = 'none';
+                dashboardConfigValues.style.display = 'block';
+
+                updateURLTable()
+
+            }
+            reader.readAsText(file);
+        }
+    })
 }
 
 const apiEndPointEditor = $('#api-endpoint-editor');
@@ -99,6 +124,8 @@ function closeNewURL(btn) {
     apiEndPointEditor.style.display = 'none';
 }
 function addNewURL(btn) {
+    newURLEndpointValidate($('#api-endpoint-editor-input'));
+
     function getQueryData() {
         let table = $('#api-endpoint-editor-query-data');
         // convert table to object
@@ -160,6 +187,23 @@ function addNewURL(btn) {
     updateURLTable();
 
     closeNewURL(btn);
+}
+
+function newURLEndpointValidate(inpt) {
+    const valid = validateAPIUrl(inpt.value);
+    if (valid.includes(false)) {
+        inpt.style.borderColor = '#ff0000';
+        $('#alert-newurl-endpoint-error').style.display = 'block';
+        if (valid[1] !== undefined) {
+            // there is a quick fix available for the URL
+            $('#alert-newurl-endpoint-error').innerHTML = `<b>Error:</b> the URL is invalid. <button class="btn btn-sm btn-danger" onclick="document.querySelector('#api-endpoint-editor-input').value='${valid[1]}';newURLEndpointValidate(document.querySelector('#api-endpoint-editor-input'))">Fix</button>`;
+        } else {
+            $('#alert-newurl-endpoint-error').innerHTML = '<b>Error:</b> please enter a valid URL.';
+        }
+    } else {
+        inpt.style.borderColor = 'initial';
+        $('#alert-newurl-endpoint-error').style.display = 'none';
+    }
 }
 
 function removeNewURLQueryDataRow(btn) {
@@ -239,4 +283,66 @@ updateURLTable()
 
 function changeAPIEndpointResponseLanguage(select) {
     newURLEditor.session.setMode('ace/mode/' + select.value);
+}
+
+
+// generate JSON file from configuration and parse json files to configuration compatible object
+
+// why do this?
+// the JSON file is generated like this to try to improve the speed at which the data can be gathered from the configuration, instead of having to go through the entire configuration every time because the ids are non descript you can just straight away find the endpoint. also, it makes the file more human readable
+
+
+function generateJSONFile() {
+    if (Object.keys(configuration.api).length === 0) {
+        Swal.fire({
+            title: 'You have no URLs!',
+            text: 'You need to add at least one URL before you can generate a JSON file.',
+            icon: 'error'
+        })
+        return
+    }
+
+    // make a deep copy of the configuration so it doesn't modify the existing configuration
+    let configCopy = JSON.parse(JSON.stringify(configuration));
+
+    // remove ids and use endpoints as keys
+    Object.keys(configCopy.api).forEach((id) => {
+        if (configCopy.api[configCopy.api[id].endpoint.slice(4)] === undefined) {
+            configCopy.api[configCopy.api[id].endpoint.slice(4)] = new Array();
+        }
+        configCopy.api[configCopy.api[id].endpoint.slice(4)].push(configCopy.api[id]);
+
+        // delete endpoint because it is not needed
+        delete configCopy.api[configCopy.api[id].endpoint.slice(4)][configCopy.api[configCopy.api[id].endpoint.slice(4)].length -1].endpoint;
+
+        delete configCopy.api[id];
+    })
+
+    // now download the JSON
+    const json = JSON.stringify(configCopy);
+    Swal.fire ({
+        text: 'The JSON file has been generated. You can now download it to your computer.',
+        icon: 'success',
+        confirmButtonText: 'Download'
+    }).then((r) => {
+        if (r.isConfirmed) {
+            var blob = new Blob ([json], { type: "text/json;charset=utf-8" })
+            saveAs(blob, "config.json")
+        }
+    })
+}
+
+function readConfigFile(config) {
+    configObj = JSON.parse(config)
+
+    let conf = { id: randomID(), api: {} };
+
+    Object.keys(configObj.api).forEach((ep) => {
+        for (let i = 0; i < configObj.api[ep].length; i++) {
+            let id = randomID();
+            conf['api'][id] = configObj.api[ep][i];
+            conf['api'][id].endpoint = "api/" + ep;
+        }
+    })
+    return conf;
 }
