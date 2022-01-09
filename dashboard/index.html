@@ -27,15 +27,23 @@
 
         <div class="row p-5" id="start-button-row">
             <div class="col">
-                <button class="btn btn-primary btn-lg shadow" onclick="openServerConfig()">
-                    <i class="bi bi-folder2-open"></i>
-                    Open existing configuration
-                </button>
+                <div class="vstack gap-2">
+                    <button class="btn btn-primary btn-lg shadow" onclick="openServerConfig()">
+                        <i class="bi bi-folder2-open me-2"></i>
+                        Open existing configuration
+                    </button>
 
-                <button class="ms-2 btn btn-primary btn-lg shadow" onclick="uploadConfig()">
-                    <i class="bi bi-upload me-2"></i>
-                    Upload Mock API Config File
-                </button>
+                    <button class="btn btn-primary btn-lg shadow" onclick="uploadConfig()">
+                        <i class="bi bi-upload me-2"></i>
+                        Upload Mock API Config File
+                    </button>
+
+                    <a class="btn btn-primary btn-lg shadow" href="github-auth/">
+                        <i class="bi bi-github me-2"></i>
+                        Manage Github Integration
+                    </a>
+
+                </div>
             </div>
         </div>
 

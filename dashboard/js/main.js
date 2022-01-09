@@ -1,3 +1,11 @@
+/*
+*
+* Mock API
+* MIT License
+* By Jack Childs 2022
+*
+*/
+
 let configuration = {
     // the id property is used to identify the API version
     id: randomID(),
@@ -110,6 +118,7 @@ function newURL(btn) {
 
     // reset editor
     $('#alert-newurl-endpoint-error').style.display = 'none';
+    $('#api-endpoint-editor-input').style.borderColor = 'initial';
 
     $('#api-endpoint-editor-input').value = '';
     $('#api-endpoint-editor-method').value = 'GET';

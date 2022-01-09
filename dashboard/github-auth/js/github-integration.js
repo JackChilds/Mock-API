@@ -1,3 +1,11 @@
+/*
+*
+* Mock API
+* MIT License
+* By Jack Childs 2022
+*
+*/
+
 // function that checks personal access token and gets username
 async function initialConnect() {
     const tokenInput = document.querySelector('#github-token-input');
@@ -34,7 +42,7 @@ async function initialConnect() {
 }
 
 async function selectRepository(octokit) {
-    document.querySelector('#back-btn').outerHTML = '<buton class="btn btn-light mb-4" onclick="window.location.reload()"><i class="bi bi-caret-left-fill"></i> Back</button>';
+    document.querySelector('#back-btn').outerHTML = '<buton class="btn btn-light mb-4" id="back-btn" onclick="window.location.reload()"><i class="bi bi-caret-left-fill"></i> Back</button>';
 
     // get repositories from github
     try {
@@ -192,7 +200,7 @@ async function repoSelect(el) {
 }
 
 function toPage3(repoName) {
-    document.querySelector('#back-btn').outerHTML = '<buton class="btn btn-light mb-4" onclick="window.location.reload()"><i class="bi bi-caret-left-fill"></i> Back</button>';
+    document.querySelector('#back-btn').outerHTML = '<buton class="btn btn-light mb-4" id="back-btn" onclick="window.location.reload()"><i class="bi bi-caret-left-fill"></i> Back</button>';
     document.querySelector('#page-1').style.display = 'none';
     document.querySelector('#page-2').style.display = 'none';
     document.querySelector('#page-3').style.display = 'block';
