@@ -295,63 +295,258 @@ function changeAPIEndpointResponseLanguage(select) {
 }
 
 
-// generate JSON file from configuration and parse json files to configuration compatible object
 
-// why do this?
-// the JSON file is generated like this to try to improve the speed at which the data can be gathered from the configuration, instead of having to go through the entire configuration every time because the ids are non descript you can just straight away find the endpoint. also, it makes the file more human readable
+let octokit = undefined;
 
-
-function generateJSONFile() {
-    if (Object.keys(configuration.api).length === 0) {
-        Swal.fire({
-            title: 'You have no URLs!',
-            text: 'You need to add at least one URL before you can generate a JSON file.',
-            icon: 'error'
-        })
-        return
+async function updateGithub() {
+    $('#github-update-output').innerHTML = ''
+    function quitEarly() {
+        $('#dashboard-config-values').style.display = 'block';
+        $('#dashboard-github-update-panel').style.display = 'none';
     }
 
-    // make a deep copy of the configuration so it doesn't modify the existing configuration
-    let configCopy = JSON.parse(JSON.stringify(configuration));
+    function outputText(t) {
+        $('#github-update-output').innerHTML += `${t}<br>`;
+    }
 
-    // remove ids and use endpoints as keys
-    Object.keys(configCopy.api).forEach((id) => {
-        if (configCopy.api[configCopy.api[id].endpoint.slice(4)] === undefined) {
-            configCopy.api[configCopy.api[id].endpoint.slice(4)] = new Array();
+    const json = generateJSONFile(configuration, true, true);
+    if (json === "error") {
+        quitEarly();
+        Swal.fire({
+            icon: 'error',
+            title: 'You have no URLs!',
+            text: 'You need to add at least one URL before you can update the Github repository.',
+            showConfirmButton: false
+        })
+
+        return;
+    }
+
+    $('#dashboard-config-values').style.display = 'none';
+    $('#dashboard-github-update-panel').style.display = 'block';
+
+    outputText('JSON config file generated');
+
+    
+
+    // use the github token and test connection by getting username
+    if (Cookies.get('github-token') === undefined || Cookies.get('github-repo') === undefined) {
+        Swal.fire({
+            icon: 'error',
+            text: 'You must complete the GitHub integration process first to be able to update your repository.',
+            confirmButtonText: 'Go to GitHub integration'
+        }).then ((r) => {
+            if (r.isConfirmed) {
+                window.open('github-auth/', '_blank');
+            }
+        })
+
+        quitEarly();
+
+        return;
+    }
+
+    try {
+        octokit = new Octokit({
+            auth: Cookies.get('github-token')
+        });
+
+        const {
+            data: { login },
+        } = await octokit.rest.users.getAuthenticated();
+
+        outputText(`GitHub authentication successful. Identified as ${login}.`);
+
+        outputText(`Checking if repository exists...`);
+
+        const {
+            data: allRepos,
+        } = await octokit.rest.repos.listForAuthenticatedUser({
+            type: 'owner',
+            sort: 'updated',
+            direction: 'desc',
+        });
+
+        let repoExists = false
+        allRepos.forEach( repo => {
+            if (repoExists) return
+            if (repo.name == Cookies.get('github-repo')) {
+                repoExists = true;
+                outputText(`Repository exists.`);
+            }
+        })
+
+        if (!repoExists) {
+            quitEarly();
+            Swal.fire({
+                icon: 'error',
+                title: 'Repository not found',
+                text: 'Please re-complete the GitHub integration process.',
+                confirmButtonText: 'Go to GitHub integration'
+            }).then ((r) => {
+                if (r.isConfirmed) {
+                    window.open('github-auth/', '_blank');
+                }
+            })
+
+            return;
         }
-        configCopy.api[configCopy.api[id].endpoint.slice(4)].push(configCopy.api[id]);
 
-        // delete endpoint because it is not needed
-        delete configCopy.api[configCopy.api[id].endpoint.slice(4)][configCopy.api[configCopy.api[id].endpoint.slice(4)].length -1].endpoint;
+        outputText(`Checking if branch exists...`);
 
-        delete configCopy.api[id];
-    })
+        const {
+            data: branches,
+        } = await octokit.rest.repos.listBranches({
+            owner: login,
+            repo: Cookies.get('github-repo')
+        })
 
-    // now download the JSON
-    const json = JSON.stringify(configCopy);
-    Swal.fire ({
-        text: 'The JSON file has been generated. You can now download it to your computer.',
-        icon: 'success',
-        confirmButtonText: 'Download'
-    }).then((r) => {
-        if (r.isConfirmed) {
-            var blob = new Blob ([json], { type: "text/json;charset=utf-8" })
-            saveAs(blob, "config.json")
+        let branchExists = false;
+        branches.forEach(branch => {
+            if (branchExists) return;
+            if (branch.name == Cookies.get('github-branch')) {
+                branchExists = true;
+                outputText(`Branch exists.`);
+            }
+        })
+
+        if (!branchExists) {
+            quitEarly();
+            Swal.fire({
+                icon: 'error',
+                title: 'Branch not found',
+                text: 'Please re-complete the GitHub integration process.',
+                confirmButtonText: 'Go to GitHub integration'
+            }).then ((r) => {
+                if (r.isConfirmed) {
+                    window.open('github-auth/', '_blank');
+                }
+            })
+
+            return;
         }
-    })
+
+        // allow the user to confirm that they want to continue as the action will overwrite the existing repo branch
+        const { value: confirmed } = await Swal.fire({
+            title: 'Are you sure you wish to continue?',
+            text: `By continuing, branch ${Cookies.get('github-branch')} in repository ${Cookies.get('github-repo')} will be overwritten.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Continue', 
+            cancelButtonText: 'Cancel',
+            preConfirm: () => {
+                return true
+            }
+        })
+        if (!confirmed) {
+            quitEarly();
+            return;
+        }
+
+        outputText(`Confirmed update of branch ${Cookies.get('github-branch')} in repository ${Cookies.get('github-repo')}.`);
+
+        async function deleteFolder(folder, msg) {
+            try {
+                const {
+                    data: files,
+                } = await octokit.rest.repos.getContent({
+                    owner: login,
+                    repo: Cookies.get('github-repo'),
+                    path: folder,
+                    ref: Cookies.get('github-branch')
+                })
+
+                console.log(files)
+
+                files.forEach(file => {
+                    if (file.type == 'dir') {
+                        deleteFolder(folder + '/' + file.name)
+                    } else {
+                        octokit.rest.repos.deleteFile({
+                            owner: login,
+                            repo: Cookies.get('github-repo'),
+                            path: file.path,
+                            ref: Cookies.get('github-branch'),
+                            sha: file.sha,
+                            message: msg
+                        })
+                    }
+                })
+            } catch (e) {
+                // folder likely doesn't exist
+                console.log(e)
+                return;
+            }
+        }
+
+        async function uploadFile(path, c, msg) {
+            try {
+                const {
+                    data: contents
+                } = await octokit.rest.repos.getContent({
+                    owner: login,
+                    repo: Cookies.get('github-repo'),
+                    path: path,
+                    ref: Cookies.get('github-branch')
+                })
+                const {
+                    data: configFileStatus
+                } = await octokit.rest.repos.createOrUpdateFileContents({
+                    owner: login,
+                    repo: Cookies.get('github-repo'),
+                    path: path,
+                    message: msg,
+                    content: btoa(c),
+                    branch: Cookies.get('github-branch'),
+                    sha: contents.sha
+                })
+
+                return configFileStatus;
+            } catch (e) {  
+                // if error presume its 404 (file doesn't already exist and instead try again with creating file)
+                const {
+                    data: configFileStatus
+                } = await octokit.rest.repos.createOrUpdateFileContents({
+                    owner: login,
+                    repo: Cookies.get('github-repo'),
+                    path: path,
+                    message: msg,
+                    content: btoa(c),
+                    branch: Cookies.get('github-branch'),
+                })
+
+                return configFileStatus;
+            }
+        }
+
+        outputText('Clearing api folder...')
+        await deleteFolder('api', 'Removed API Directory')
+
+        outputText('Starting upload process...')
+
+        // get contents of current config.json file (needed as sha parameter)
+        const configFileStatus = await uploadFile('config.json', json, 'Updated config.json');
+
+        if (configFileStatus === "error") return
+
+        console.log(configFileStatus)
+
+    } catch (e) {
+        quitEarly();
+        handleGitError(e);
+    }
 }
 
-function readConfigFile(config) {
-    configObj = JSON.parse(config)
 
-    let conf = { id: randomID(), api: {} };
-
-    Object.keys(configObj.api).forEach((ep) => {
-        for (let i = 0; i < configObj.api[ep].length; i++) {
-            let id = randomID();
-            conf['api'][id] = configObj.api[ep][i];
-            conf['api'][id].endpoint = "api/" + ep;
-        }
+function handleGitError(e) {
+    console.log(e);
+    Swal.fire({
+        icon: "error",
+        title: "An unexpected error occured",
+        text: "Your personal access token may be invalid, expired or there may be a network issue. Please try again.",
+        footer: "Consult the console for more information.",
+        showConfirmButton: false
     })
-    return conf;
 }

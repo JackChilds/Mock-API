@@ -160,16 +160,29 @@
             </div>
             <div class="row mt-2">
                 <div class="col">
-                    <button class="btn btn-primary btn-lg me-2">
+                    <button class="btn btn-primary btn-lg me-2" onclick="updateGithub()">
                         <i class="bi bi-github"></i>
                         Commit Update to Github Repository
                     </button>
-                    <button class="btn btn-primary btn-lg me-2" onclick="generateJSONFile()">
+                    <button class="btn btn-primary btn-lg me-2" onclick="generateJSONFile(configuration)">
                         <i class="bi bi-file-earmark-text"></i> Download Mock API Config File
                     </button>
                 </div>
             </div>
         </div>
+
+        <div id="dashboard-github-update-panel" class="p-5 mt-4 rounded-corners shadow" style="display: none">
+            <div class="row">
+                <div class="col">
+                    <h3>GitHub Project Update</h3>
+                    <p>
+                        This process may take a while
+                    </p>
+                    <code id="github-update-output"></code>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-5 pt-3">
             <div class="col">
                 <code>
@@ -189,7 +202,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.2.1/dist/sweetalert2.min.js" integrity="sha256-OVxeY1nP2DXp15LcHll2UDTcwaqvHlJ3xj1CjVLqvsY=" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js" integrity="sha256-xoh0y6ov0WULfXcLMoaA6nZfszdgI8w2CEJ/3k8NBIE=" crossorigin="anonymous"></script>
-   
+
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js" integrity="sha256-0H3Nuz3aug3afVbUlsu12Puxva3CP4EhJtPExqs54Vg=" crossorigin="anonymous"></script>
+
+
+    <script src="js/imports.mjs" type="module"></script>
+
+    <script src="js/config-file-tools.js"></script>
     <script src="js/main.js"></script>
 
 </body>
