@@ -6,7 +6,7 @@
 *
 */
 
-function getRespoonseFromConfig(req, res) {
+export function getResponseFromConfig(req, res) {
     fetch ('/config.json')
     .then(response => response.json())
     .then(data => {
