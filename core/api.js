@@ -7,39 +7,55 @@
 */
 
 export function getResponseFromConfig(req, res) {
-    fetch ('/config.json')
-    .then(response => response.json())
-    .then(data => {
-        const config = JSON.parse(data);
+    function sortObj(obj) {
+        return Object.keys(obj).sort().reduce(function (result, key) {
+            result[key] = obj[key];
+            return result;
+        }, {});
+    }
 
-        let hasResponded = false
-        Object.keys(config.api).forEach(ep => {
-            if (ep != window.location.pathname.slice(4)) return
-            config.api[ep].forEach(api => {
-                if (api.method === req.method) {
-                    let valid = true;
-                    Object.keys(api.queryData).forEach(key => {
-                        if (!valid) return
-                        valid = api.queryData[key] == req.query[key] ? true : false;
-                    })
+    const { readFileSync } = require ('fs')
+    const { join } = require('path');
 
-                    if (valid) {
-                        res.status(api.response.status)
-                        if (api.response.type === 'json')
-                            res.json(api.response.data)
-                        else if (api.response.type === 'html')
-                            res.send(api.response.data)
-                        
-                        hasResponded = true
-                    }
-                }
-            })
-        })
+    const config = JSON.parse(readFileSync(join(__dirname, '../config.json'), 'utf8'));
 
-        if (!hasResponded) {
-            res.status(404)
-            res.send('Error 404: Not Found')
+    // construct a pathname URL from dynamic path query data
+    let pathname = 'api'
+    const sortedQueryData = sortObj(req.query);
+    Object.keys(sortedQueryData).forEach((key) => {
+        if (key.startsWith('mock-api-')) {
+            pathname += '/' + sortedQueryData[key];
         }
-
     })
+
+    let hasResponded = false
+    Object.keys(config.api).forEach(ep => {
+        if (ep != pathname.slice(4)) return
+        config.api[ep].forEach(api => {
+            if (api.method === req.method) {
+                let valid = true;
+                Object.keys(api.queryData).forEach(key => {
+                    if (!valid) return
+                    valid = api.queryData[key] == req.query[key] ? true : false;
+                })
+
+                if (valid) {
+                    res.status(api.response.status)
+                    if (api.response.type === 'json')
+                        res.json(api.response.data)
+                    else if (api.response.type === 'html')
+                        res.send(api.response.data)
+                    
+                    hasResponded = true
+                }
+            }
+        })
+    })
+
+    if (!hasResponded) {
+        res.status(404)
+        res.send('Error 404: Not Found')
+    }
+
+    
 }
