@@ -25,8 +25,12 @@ function generateJSONFile(conf, justJSON=false, suppressErrors=false) {
         return "error"
     }
 
+    console.log((conf))
+
     // make a deep copy of the configuration so it doesn't modify the existing configuration
     let configCopy = JSON.parse(JSON.stringify(conf));
+
+    console.log(configCopy)
 
     // remove ids and use endpoints as keys
     Object.keys(configCopy.api).forEach((id) => {
@@ -41,7 +45,6 @@ function generateJSONFile(conf, justJSON=false, suppressErrors=false) {
         delete configCopy.api[id];
     })
 
-    // now download the JSON
     const json = JSON.stringify(configCopy);
 
     if (!justJSON) {
@@ -51,6 +54,7 @@ function generateJSONFile(conf, justJSON=false, suppressErrors=false) {
             confirmButtonText: 'Download'
         }).then((r) => {
             if (r.isConfirmed) {
+                // now download the JSON
                 var blob = new Blob ([json], { type: "text/json;charset=utf-8" })
                 saveAs(blob, "config.json")
             }

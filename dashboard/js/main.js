@@ -458,8 +458,6 @@ async function updateGithub() {
                     ref: Cookies.get('github-branch')
                 })
 
-                console.log(files)
-
                 files.forEach(file => {
                     if (file.type == 'dir') {
                         deleteFolder(folder + '/' + file.name)
@@ -503,6 +501,8 @@ async function updateGithub() {
                     sha: contents.sha
                 })
 
+                outputText(`Created file: ${path}`)
+
                 return configFileStatus;
             } catch (e) {  
                 // if error presume its 404 (file doesn't already exist and instead try again with creating file)
@@ -526,12 +526,35 @@ async function updateGithub() {
 
         outputText('Starting upload process...')
 
-        // get contents of current config.json file (needed as sha parameter)
         const configFileStatus = await uploadFile('config.json', json, 'Updated config.json');
 
         if (configFileStatus === "error") return
 
         console.log(configFileStatus)
+
+        // calculate number of folders to create
+        let apiDepth = 0;
+        Object.keys(JSON.parse(json)).forEach(ep => {
+            if (ep.split('/').length > apiDepth) 
+                apiDepth = ep.split('/').length;
+        })
+
+        console.log(apiDepth)
+
+        // get api endpoint template
+        const epT = await fetch ('templates/api-ep-template.js');
+        const epTemplate = await epT.text()
+
+        // generate API file structure
+        let currentPath = 'api'
+        await uploadFile(currentPath + '/[mock-api-0].js', epTemplate, 'Created Mock-API endpoint')
+        for (let i = 1; i < apiDepth; i++) {
+            const path = currentPath + `/[mock-api-${i-1}]/[mock-api-${i}].js`;
+            await uploadFile(path, epTemplate, 'Created Mock-API endpoint')
+            currentPath += `[mock-api-${i-1}]`
+        }
+
+        outputText('Upload complete.')
 
     } catch (e) {
         quitEarly();
