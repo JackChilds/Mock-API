@@ -460,7 +460,7 @@ async function updateGithub() {
 
                 files.forEach(file => {
                     if (file.type == 'dir') {
-                        deleteFolder(folder + '/' + file.name)
+                        deleteFolder(folder + '/' + file.name, 'Deleting file')
                     } else {
                         octokit.rest.repos.deleteFile({
                             owner: login,
@@ -534,7 +534,7 @@ async function updateGithub() {
 
         // calculate number of folders to create
         let apiDepth = 0;
-        Object.keys(JSON.parse(json)).forEach(ep => {
+        Object.keys(JSON.parse(json).api).forEach(ep => {
             if (ep.split('/').length > apiDepth) 
                 apiDepth = ep.split('/').length;
         })
