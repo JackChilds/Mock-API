@@ -234,6 +234,9 @@ function removeNewURLQueryDataRow(btn) {
     if ($$('#api-endpoint-editor-query-data tr').length > 1) {
         btn.parentNode.parentNode.remove();
         updateNewURLQueryDataRow();
+    } else if ($$('#api-endpoint-editor-query-data tr td')[1].innerHTML != '' || $$('#api-endpoint-editor-query-data tr td')[2].innerHTML != '') {
+        btn.parentNode.parentNode.remove();
+        addNewURLQueryDataRow();
     }
 }
 function addNewURLQueryDataRow() {
@@ -245,7 +248,12 @@ function resetNewURLQueryData() {
 }
 
 function updateNewURLQueryDataRow() {
-    if ($$('#api-endpoint-editor-query-data tr').length == 1) {
+    if (
+        $$('#api-endpoint-editor-query-data tr').length == 1 &&
+        $$('#api-endpoint-editor-query-data tr td')[1].innerHTML == '' && 
+        $$('#api-endpoint-editor-query-data tr td')[2].innerHTML == ''
+        
+    ) {
         $('#api-endpoint-editor-query-data tr td button').setAttribute('disabled', 'disabled');
         $('#api-endpoint-editor-query-data tr td button').style.opacity = '0.2';
     } else {
@@ -262,13 +270,15 @@ function deleteURL(endpoint) {
     updateURLTable();
 } 
 
-function editURL(endpoint) {
+function editURL(endpoint, isDuplicated=false) {
     newURL($('#new-url-editor-btn'));
-    idBeingEdited = endpointToID(endpoint);
+
+    idBeingEdited = isDuplicated ? "new" : endpointToID(endpoint)
+
     const urlConfig = configuration['api'][endpointToID(endpoint)];
     $('#api-endpoint-editor-input').value = endpoint.slice(4);
     $('#api-endpoint-editor-method').value = urlConfig.method;
-    // populate query data table with query data
+
     resetNewURLQueryData();
 
     if (Object.keys(urlConfig.queryData).length == 0) 
@@ -277,6 +287,8 @@ function editURL(endpoint) {
     Object.keys(urlConfig.queryData).forEach(function(key) {
         $('#api-endpoint-editor-query-data').innerHTML += '<tr><td><button class=btn onclick=removeNewURLQueryDataRow(this)><i class="bi bi-trash"></i></button><td contenteditable="true" data-placeholder="Name">' + key + '<td contenteditable="true" data-placeholder="Value">' + urlConfig.queryData[key];
     });
+
+    updateNewURLQueryDataRow();
 
     $('#api-endpoint-editor-response-status').value = urlConfig.response.status;
     $('#api-endpoint-editor-response-type').value = urlConfig.response.type;
@@ -298,7 +310,21 @@ function updateURLTable() {
 
     Object.keys(configuration['api']).forEach(function (x) {
         const e = configuration['api'][x]
-        table.innerHTML += `<tr><td>${e.endpoint}</td><td>${e.method}</td><td>${shorternQueryData(JSON.stringify(e.queryData))}</td><td><button class="btn me-2" onclick="editURL('${e.endpoint}')"><i class="bi bi-pencil"></i></button><button class="btn" onclick="deleteURL('${e.endpoint}')"><i class="bi bi-trash"></i></button></td></tr>`;
+        table.innerHTML += `
+        <tr>
+            <td>${e.endpoint}</td>
+            <td>${e.method}</td>
+            <td>${shorternQueryData(JSON.stringify(e.queryData))}</td>
+            <td>
+                <button class="btn me-2" onclick="editURL('${e.endpoint}')">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn me-2" onclick="editURL('${e.endpoint}', true)"> 
+                    <i class="bi bi-files"></i>
+                </button>
+                <button class="btn" onclick="deleteURL('${e.endpoint}')"><i class="bi bi-trash"></i></button>
+            </td>
+        </tr>`;
     })
 }
 
@@ -307,6 +333,7 @@ updateURLTable()
 function changeAPIEndpointResponseLanguage(select) {
     newURLEditor.session.setMode('ace/mode/' + select.value);
 }
+
 
 
 
