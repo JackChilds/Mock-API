@@ -56,6 +56,6 @@ export function getResponseFromConfig(req, res) {
 
     if (!hasResponded) {
         res.status(404)
-        res.json(JSON.parse(config.notFound))
+        res.json(config.notFound)
     }
 }
