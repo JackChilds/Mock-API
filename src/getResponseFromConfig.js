@@ -28,6 +28,8 @@ export function getResponseFromConfig(req, res) {
         }
     })
 
+    console.log(sortedQueryData)
+
     let hasResponded = false
     Object.keys(config.api).forEach(ep => {
         if (ep != pathname.slice(4)) return
