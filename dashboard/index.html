@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        // Vercel behaves weirdly when the page is loaded without a final slash, e.g. someurl/dashboard instead of someurl/dashboard/
+        
+        if (!window.location.pathname.endsWith('/')) {
+            window.location.href += '/'
+        }
+    </script>
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,17 +36,22 @@
         <div class="row p-5" id="start-button-row">
             <div class="col">
                 <div class="vstack gap-2">
-                    <button class="btn btn-primary btn-lg shadow" onclick="openServerConfig()">
+                    <button class="btn btn-primary btn-lg shadow text-start" onclick="openServerConfig()">
                         <i class="bi bi-folder2-open me-2"></i>
                         Open existing configuration
                     </button>
 
-                    <button class="btn btn-primary btn-lg shadow" onclick="uploadConfig()">
+                    <button class="btn btn-primary btn-lg shadow text-start" onclick="createEmptyConfiguration()">
+                        <i class="bi bi-plus-lg"></i>
+                        Create empty configuration
+                    </button>
+
+                    <button class="btn btn-primary btn-lg shadow text-start" onclick="uploadConfig()">
                         <i class="bi bi-upload me-2"></i>
                         Upload Mock API Config File
                     </button>
 
-                    <a class="btn btn-primary btn-lg shadow" href="github-auth/">
+                    <a class="btn btn-primary btn-lg shadow text-start" href="github-auth/">
                         <i class="bi bi-github me-2"></i>
                         Manage Github Integration
                     </a>
@@ -50,7 +63,7 @@
         <div id="dashboard-config-values" class="p-5 mt-4 rounded-corners shadow" style="display:none;">
             <div class="row mb-3">
                 <div class="col">
-                    <button class="btn btn-light" onclick="window.location.reload()">
+                    <button class="btn btn-light" onclick="dashboardBack()">
                         <i class="bi bi-caret-left-fill"></i> Back
                     </button>
                 </div>

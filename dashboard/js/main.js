@@ -85,6 +85,11 @@ async function openServerConfig() {
     dashboardConfigValues.style.display = 'block';
 }
 
+function createEmptyConfiguration() {
+    startButtonRow.style.display = 'none';
+    dashboardConfigValues.style.display = 'block';
+}
+
 function uploadConfig() {
     Swal.fire({
         title: 'Upload Config File',
@@ -108,6 +113,22 @@ function uploadConfig() {
             reader.readAsText(file);
         }
     })
+}
+
+function dashboardBack() {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Are you sure?',
+        text: 'Unsaved changes will be lost',
+        showCancelButton: true,
+        confirmButtonText: 'Cancel',
+        cancelButtonText: 'Continue',
+    }).then (r => {
+        if (!r.isConfirmed) {
+            window.location.reload()
+        }
+    })
+
 }
 
 const apiEndPointEditor = $('#api-endpoint-editor');
