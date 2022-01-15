@@ -589,10 +589,7 @@ async function updateGithub() {
             }
         }
 
-        outputText('Clearing api folder...')
         await deleteFolder('api', 'Removed API Directory')
-
-        outputText('Starting upload process...')
 
         await uploadFile('config.json', json, 'Updated config.json');
 
