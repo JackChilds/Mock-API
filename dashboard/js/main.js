@@ -212,7 +212,7 @@ function addNewURL(btn) {
     Object.keys(configuration['api']).forEach((key) => {
         if (configuration['api'][key].endpoint == urlConfig.endpoint) {
             if (JSON.stringify(configuration.api[key].queryData) == JSON.stringify(urlConfig.queryData)) {
-                if (configuration['api'][key].method == urlConfig.method) {
+                if (configuration['api'][key].method == urlConfig.method && idBeingEdited === "new") {
                     $('#alert-newurl-endpoint-error').style.display = 'block';
                     $('#alert-newurl-endpoint-error').innerHTML = '<b>Error:</b> URL already exists with the same query data and method';
                     btn.blur();
@@ -320,6 +320,9 @@ function editURL(endpoint, isDuplicated=false) {
     $('#api-endpoint-editor-response-type').value = urlConfig.response.type;
     changeAPIEndpointResponseLanguage($('#api-endpoint-editor-response-type'))
     newURLEditor.setValue(urlConfig.response.data);
+    if ($('#api-endpoint-editor-response-type').value === 'redirect') {
+        $('#api-endpoint-editor-res-input').value = urlConfig.response.data;
+    }
 }
 
 function updateURLTable() {
