@@ -70,7 +70,17 @@ function validateAPIUrl(url) {
 const startButtonRow = $('#start-button-row');
 const dashboardConfigValues = $('#dashboard-config-values');
 
-function openServerConfig() {
+async function openServerConfig() {
+    const response = await fetch('/config.json');
+    if (response.ok) {
+        const json = await response.json();
+        configuration = readConfigFile(JSON.stringify(json));
+
+        updateURLTable()
+    } else {
+        console.error('Unable to fetch config.json file from the server, starting a blank project instead')
+    }
+
     startButtonRow.style.display = 'none';
     dashboardConfigValues.style.display = 'block';
 }
