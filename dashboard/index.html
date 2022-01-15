@@ -223,5 +223,26 @@
     <script src="js/config-file-tools.js"></script>
     <script src="js/main.js"></script>
 
+    <script>
+        // prompt the user to manage GitHub integration if they haven't already
+        if (
+            Cookies.get('github-repo') === undefined
+            || Cookies.get('github-branch') === undefined || Cookies.get('github-username') === undefined ||
+            Cookies.get('github-token') === undefined
+        ) {
+            Swal.fire({
+                title: 'Welcome to the dashboard!',
+                text: 'Before you can start using the dashboard, you must first configure your GitHub integration.',
+                confirmButtonText: 'Configure GitHub integration',
+                showCancelButton: true,
+                cancelButtonText: `I know what I'm doing`,
+            }).then (r => {
+                if (r.isConfirmed) {
+                    window.location.href += 'github-auth/';
+                }
+            })
+        }
+    </script>
+
 </body>
 </html>
