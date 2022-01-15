@@ -54,8 +54,6 @@ export function getResponseFromConfig(req, res) {
 
     if (!hasResponded) {
         res.status(404)
-        res.send('Error 404: Not Found')
+        res.json(JSON.parse(config.notFound))
     }
-
-    
 }

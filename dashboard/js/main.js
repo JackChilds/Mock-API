@@ -7,9 +7,13 @@
 */
 
 let configuration = {
-    // the id property is used to identify the API version
+    // the id property is used to identify the deployed version
     id: randomID(),
-    api: {}
+    api: {},
+    notFound: {
+        status: 404,
+        message: "Not found",
+    }
 }
 
 // shorthand for query selector (and all)
@@ -458,11 +462,11 @@ async function updateGithub() {
                     ref: Cookies.get('github-branch')
                 })
 
-                files.forEach(file => {
+                files.forEach(async (file) => {
                     if (file.type == 'dir') {
-                        deleteFolder(folder + '/' + file.name, 'Deleting file')
+                        await deleteFolder(folder + '/' + file.name, 'Deleting file')
                     } else {
-                        octokit.rest.repos.deleteFile({
+                        await octokit.rest.repos.deleteFile({
                             owner: login,
                             repo: Cookies.get('github-repo'),
                             path: file.path,
@@ -481,8 +485,10 @@ async function updateGithub() {
             }
         }
 
-        async function uploadFile(path, c, msg) {
+        async function uploadFile(path, c, msg, exists=true) {
             try {
+                if (!exists) { throw `File doesn't exist: ${path}` }
+
                 const {
                     data: contents
                 } = await octokit.rest.repos.getContent({
@@ -530,11 +536,7 @@ async function updateGithub() {
 
         outputText('Starting upload process...')
 
-        const configFileStatus = await uploadFile('config.json', json, 'Updated config.json');
-
-        if (configFileStatus === "error") return
-
-        console.log(configFileStatus)
+        await uploadFile('config.json', json, 'Updated config.json');
 
         // calculate number of folders to create
         let apiDepth = 0;
@@ -551,11 +553,19 @@ async function updateGithub() {
 
         // getting error 404 in this process
         let currentPath = 'api'
-        await uploadFile(currentPath + '/[mock-api-0].js', epTemplate, 'Created Mock-API endpoint')
+        await uploadFile(
+            currentPath + '/[mock-api-0].js', 
+            epTemplate.replace(
+                '{{ srcLocation }}', 
+                '../'.repeat(1)
+            ), 
+            'Created Mock-API endpoint',
+            false
+        )
         for (let i = 1; i < apiDepth; i++) {
             const path = currentPath + `/[mock-api-${i-1}]/[mock-api-${i}].js`;
-            const template = epTemplate.replace('{{ srcLocation }}', '../'.repeat(i))
-            await uploadFile(path, template, 'Created Mock-API endpoint')
+            const template = epTemplate.replace('{{ srcLocation }}', '../'.repeat(i+1))
+            await uploadFile(path, template, 'Created Mock-API endpoint', false)
             currentPath += `/[mock-api-${i-1}]`
         }
 
