@@ -25,12 +25,8 @@ function generateJSONFile(conf, justJSON=false, suppressErrors=false) {
         return "error"
     }
 
-    console.log((conf))
-
     // make a deep copy of the configuration so it doesn't modify the existing configuration
     let configCopy = JSON.parse(JSON.stringify(conf));
-
-    console.log(configCopy)
 
     // remove ids and use endpoints as keys
     Object.keys(configCopy.api).forEach((id) => {

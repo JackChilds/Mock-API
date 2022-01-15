@@ -470,6 +470,8 @@ async function updateGithub() {
                             sha: file.sha,
                             message: msg
                         })
+
+                        outputText(`Deleted file ${file.path}`)
                     }
                 })
             } catch (e) {
@@ -517,6 +519,8 @@ async function updateGithub() {
                     branch: Cookies.get('github-branch'),
                 })
 
+                outputText(`Created file: ${path}`)
+
                 return configFileStatus;
             }
         }
@@ -539,19 +543,20 @@ async function updateGithub() {
                 apiDepth = ep.split('/').length;
         })
 
-        console.log(apiDepth)
-
         // get api endpoint template
         const epT = await fetch ('templates/api-ep-template.js');
         const epTemplate = await epT.text()
 
         // generate API file structure
+
+        // getting error 404 in this process
         let currentPath = 'api'
         await uploadFile(currentPath + '/[mock-api-0].js', epTemplate, 'Created Mock-API endpoint')
         for (let i = 1; i < apiDepth; i++) {
             const path = currentPath + `/[mock-api-${i-1}]/[mock-api-${i}].js`;
-            await uploadFile(path, epTemplate, 'Created Mock-API endpoint')
-            currentPath += `[mock-api-${i-1}]`
+            const template = epTemplate.replace('{{ srcLocation }}', '../'.repeat(i))
+            await uploadFile(path, template, 'Created Mock-API endpoint')
+            currentPath += `/[mock-api-${i-1}]`
         }
 
         outputText('Upload complete.')
