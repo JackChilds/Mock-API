@@ -196,6 +196,10 @@ function addNewURL(btn) {
         }
     }
 
+    if (urlConfig.response.type === 'redirect') {
+        urlConfig.response.data = $('#api-endpoint-editor-res-input').value
+    }
+
     if (urlConfig.endpoint === 'api/') {
         $('#alert-newurl-endpoint-error').style.display = 'block';
         $('#alert-newurl-endpoint-error').innerHTML = '<b>Error:</b> you must specify an API URL.';
