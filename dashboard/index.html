@@ -145,14 +145,18 @@
                         <br>
 
                         <span><b>Response:</b></span>
-                        <div class="mt-1 mb-2">
+                        <div class="mt-1 mb-2" id="api-endpoint-editor-ace-parent">
                             <textarea id="api-endpoint-editor-response"></textarea>
+                        </div>
+                        <div class="mt-1 mb-2" style="display: none" id="api-endpoint-editor-res-parent">
+                            <input type="url" id="api-endpoint-editor-res-input" class="form-control">
                         </div>
 
                         <span><b>Output Response Data As:</b></span>
                         <select class="form-select api-endpoint-editor-input" id="api-endpoint-editor-response-type" style="max-width: 130px" onchange="changeAPIEndpointResponseLanguage(this)">
                             <option value="json" selected>JSON</option>
                             <option value="html">HTML</option>
+                            <option value="redirect">Redirect</option>
                         </select>
                     </div>
                     

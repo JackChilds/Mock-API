@@ -159,6 +159,7 @@ function newURL(btn) {
     $('#api-endpoint-editor-method').value = 'GET';
     $('#api-endpoint-editor-response-status').value = 200;
     $('#api-endpoint-editor-response-type').value = 'json';
+    changeAPIEndpointResponseLanguage($('#api-endpoint-editor-response-type'))
     resetNewURLQueryData();
     addNewURLQueryDataRow();
     newURLEditor.setValue('{ "status": "success" }');
@@ -313,6 +314,7 @@ function editURL(endpoint, isDuplicated=false) {
 
     $('#api-endpoint-editor-response-status').value = urlConfig.response.status;
     $('#api-endpoint-editor-response-type').value = urlConfig.response.type;
+    changeAPIEndpointResponseLanguage($('#api-endpoint-editor-response-type'))
     newURLEditor.setValue(urlConfig.response.data);
 }
 
@@ -352,10 +354,19 @@ function updateURLTable() {
 updateURLTable()
 
 function changeAPIEndpointResponseLanguage(select) {
+    if (select.value === 'redirect') {
+        $('#api-endpoint-editor-ace-parent').style.display = 'none'
+        $('#api-endpoint-editor-res-parent').style.display = 'block'
+
+        $('#api-endpoint-editor-res-input').setAttribute('type', 'url')
+        $('#api-endpoint-editor-res-input').setAttribute('placeholder', 'https://example.com')
+        return
+    }
+
+    $('#api-endpoint-editor-ace-parent').style.display = 'block'
+    $('#api-endpoint-editor-res-parent').style.display = 'none'
     newURLEditor.session.setMode('ace/mode/' + select.value);
 }
-
-
 
 
 let octokit = undefined;

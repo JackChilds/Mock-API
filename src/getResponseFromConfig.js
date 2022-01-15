@@ -45,6 +45,8 @@ export function getResponseFromConfig(req, res) {
                         res.json(JSON.parse(api.response.data))
                     else if (api.response.type === 'html')
                         res.send(api.response.data)
+                    else if (api.response.type === 'redirect')
+                        res.redirect(api.response.status, api.response.data)
                     
                     hasResponded = true
                 }
