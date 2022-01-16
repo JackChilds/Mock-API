@@ -676,6 +676,17 @@ async function updateGithub() {
                 const j = await configFile.json();
                 if (j.id == id) {
                     outputText('Update deployed.')
+
+                    $('#github-update-output').innerHTML += `
+                    <br>
+
+                    <button 
+                        class="btn btn-light"
+                        onclick="Cookies.set('open-server-config', 1);window.location.reload()">
+                        Back to dashboard
+                    </button>
+                    `;
+
                     return;
                 }
                 checkDeploymentStatus(id, i+1)
