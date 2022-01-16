@@ -697,9 +697,6 @@ async function updateGithub() {
         }
 
         checkDeploymentStatus(JSON.parse(json).id, 1)
-
-
-
     } catch (e) {
         quitEarly();
         handleGitError(e);
