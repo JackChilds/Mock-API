@@ -677,9 +677,9 @@ async function updateGithub() {
                 if (j.id == id) {
                     outputText('Update deployed.')
 
+                    // when button is clicked cookie 'open-server-config' is set and page is reloaded so that when it reloads the server configuration will be opened
                     $('#github-update-output').innerHTML += `
                     <br>
-
                     <button 
                         class="btn btn-light"
                         onclick="Cookies.set('open-server-config', 1);window.location.reload()">
