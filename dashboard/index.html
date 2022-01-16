@@ -70,7 +70,31 @@
             <div class="row">
                 <div class="col">
                     <h4>API URL Editor</h4>
-                    <button class="btn btn-danger" onclick="newURL(this)" id="new-url-editor-btn">
+                    
+                    <button class="btn btn-light mt-2" onclick="openSettings(this)" id="settings-open-btn">
+                        <i class="bi bi-gear-wide-connected me-2"></i>
+                        Settings
+                    </button>
+
+                    <div class="mt-2 p-3 rounded shadow-sm" style="display:none" id="settings-panel">
+                        <span class="fs-3 fw-bold">Settings</span>
+                        <button class="btn align-right" onclick="closeSettings()">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+
+                        <br>
+
+                        <p class="fs-5"><b>Endpoint Not Found Response</b></p>
+                        <span><b>Status Code:</b> 404</span>
+                        <br>
+                        <textarea id="settings-not-found-response"></textarea>
+                        <button class="btn btn-light" onclick="beautify.beautify(settingsNotFoundEditor.session)">
+                            <i class="bi bi-code"></i>
+                            Beautify JSON
+                        </button>
+                    </div>
+
+                    <button class="btn btn-danger mt-2" onclick="newURL(this)" id="new-url-editor-btn">
                         <i class="bi bi-plus-lg me-2"></i>
                         New URL
                     </button>
@@ -147,6 +171,11 @@
                         <span><b>Response:</b></span>
                         <div class="mt-1 mb-2" id="api-endpoint-editor-ace-parent">
                             <textarea id="api-endpoint-editor-response"></textarea>
+
+                            <button class="btn btn-light" onclick="beautify.beautify(newURLEditor.session)">
+                                <i class="bi bi-code"></i>
+                                Beautify Code
+                            </button>
                         </div>
                         <div class="mt-1 mb-2" style="display: none" id="api-endpoint-editor-res-parent">
                             <input type="url" id="api-endpoint-editor-res-input" class="form-control">
@@ -158,6 +187,10 @@
                             <option value="html">HTML</option>
                             <option value="redirect">Redirect</option>
                         </select>
+
+                        <div class="mt-2 alert alert-secondary">
+                            <b>Note:</b> When using the 'redirect' response type the HTTP status code will be ignored and code 307 will be used instead
+                        </div>
                     </div>
                     
                     <table id="api-endpoint-editor-list" class="table mt-3">
@@ -212,6 +245,7 @@
     </div>
 
     <script src="ace-builds/src-min-noconflict/ace.js"></script>
+    <script src="ace-builds/src-min-noconflict/ext-beautify.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 

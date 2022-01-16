@@ -207,7 +207,7 @@ function addNewURL(btn) {
         return;
     }
 
-    // verify that the endpoint is different to other endpoints, if it is the same then query data should be different
+    // verify that the endpoint is different to other endpoints, if it is the same then query data or method should be different
     let endpointIsValid = true;
     Object.keys(configuration['api']).forEach((key) => {
         if (configuration['api'][key].endpoint == urlConfig.endpoint) {
@@ -375,6 +375,46 @@ function changeAPIEndpointResponseLanguage(select) {
     newURLEditor.session.setMode('ace/mode/' + select.value);
 }
 
+const defaultNotFound = {
+    "status": 404,
+    "message": "Not Found"
+}
+let settingsNotFoundEditor = undefined;
+
+const beautify = ace.require('ace/ext/beautify')
+
+
+function openSettings(btn) {
+    btn.style.display = 'none';
+    $('#settings-panel').style.display = 'block'
+
+    // if editor is undefined, create new editor instance
+    if (settingsNotFoundEditor === undefined) {
+        settingsNotFoundEditor = ace.edit('settings-not-found-response');
+        settingsNotFoundEditor.setTheme('ace/theme/github');
+        settingsNotFoundEditor.session.setMode('ace/mode/json')
+        settingsNotFoundEditor.setOptions({
+            maxLines: Infinity,
+            wrap: true
+        })
+    }
+
+    if (configuration.notFound === undefined) {
+        settingsNotFoundEditor.setValue(JSON.stringify(defaultNotFound))
+    } else {
+        settingsNotFoundEditor.setValue(JSON.stringify(configuration.notFound))
+    }
+}
+function closeSettings() {
+    $('#settings-panel').style.display = 'none'
+    $('#settings-open-btn').style.display = 'block'
+
+    configuration.notFound = JSON.parse(settingsNotFoundEditor.getValue())
+}
+
+
+
+
 
 let octokit = undefined;
 
@@ -387,6 +427,7 @@ async function updateGithub() {
 
     function outputText(t) {
         $('#github-update-output').innerHTML += `${t}<br>`;
+        console.log(t)
     }
 
     const json = generateJSONFile(configuration, true, true);
@@ -407,7 +448,6 @@ async function updateGithub() {
 
     outputText('JSON config file generated');
 
-    
 
     // use the github token and test connection by getting username
     if (Cookies.get('github-token') === undefined || Cookies.get('github-repo') === undefined) {
@@ -527,44 +567,8 @@ async function updateGithub() {
 
         outputText(`Confirmed update of branch ${Cookies.get('github-branch')} in repository ${Cookies.get('github-repo')}.`);
 
-        async function deleteFolder(folder, msg) {
+        async function uploadFile(path, c, msg) {
             try {
-                const {
-                    data: files,
-                } = await octokit.rest.repos.getContent({
-                    owner: login,
-                    repo: Cookies.get('github-repo'),
-                    path: folder,
-                    ref: Cookies.get('github-branch')
-                })
-
-                files.forEach(async (file) => {
-                    if (file.type == 'dir') {
-                        await deleteFolder(folder + '/' + file.name, 'Deleting file')
-                    } else {
-                        await octokit.rest.repos.deleteFile({
-                            owner: login,
-                            repo: Cookies.get('github-repo'),
-                            path: file.path,
-                            ref: Cookies.get('github-branch'),
-                            sha: file.sha,
-                            message: msg
-                        })
-
-                        outputText(`Deleted file ${file.path}`)
-                    }
-                })
-            } catch (e) {
-                // folder likely doesn't exist
-                console.log(e)
-                return;
-            }
-        }
-
-        async function uploadFile(path, c, msg, exists=true) {
-            try {
-                if (!exists) { throw `File doesn't exist: ${path}` }
-
                 const {
                     data: contents
                 } = await octokit.rest.repos.getContent({
@@ -573,6 +577,13 @@ async function updateGithub() {
                     path: path,
                     ref: Cookies.get('github-branch')
                 })
+
+
+                if (atob(contents.content) == c) {
+                    console.log(`No need to update file ${path}`)
+                    return
+                }
+
                 const {
                     data: configFileStatus
                 } = await octokit.rest.repos.createOrUpdateFileContents({
@@ -585,7 +596,7 @@ async function updateGithub() {
                     sha: contents.sha
                 })
 
-                outputText(`Created file: ${path}`)
+                outputText(`Updated file: ${path}`)
 
                 return configFileStatus;
             } catch (e) {  
@@ -607,8 +618,6 @@ async function updateGithub() {
             }
         }
 
-        await deleteFolder('api', 'Removed API Directory')
-
         await uploadFile('config.json', json, 'Updated config.json');
 
         // calculate number of folders to create
@@ -623,8 +632,6 @@ async function updateGithub() {
         const epTemplate = await epT.text()
 
         // generate API file structure
-
-        // getting error 404 in this process
         let currentPath = 'api'
         await uploadFile(
             currentPath + '/[mock-api-0].js', 
@@ -632,17 +639,54 @@ async function updateGithub() {
                 '{{ srcLocation }}', 
                 '../'.repeat(1)
             ), 
-            'Created Mock-API endpoint',
-            false
+            'Created Mock-API endpoint'
         )
         for (let i = 1; i < apiDepth; i++) {
             const path = currentPath + `/[mock-api-${i-1}]/[mock-api-${i}].js`;
             const template = epTemplate.replace('{{ srcLocation }}', '../'.repeat(i+1))
-            await uploadFile(path, template, 'Created Mock-API endpoint', false)
+
+            await uploadFile(path, template, 'Created Mock-API endpoint')
+
             currentPath += `/[mock-api-${i-1}]`
         }
 
         outputText('Upload complete.')
+
+        
+        // now keep on fetching the config.json file checking the id each time to see if the update has been deployed yet
+
+        outputText('Waiting for update to be deployed...')
+
+        async function checkDeploymentStatus(id, i) {
+            if (i > 10) {
+                outputText('Deployment status check timed out after 10 attempts.')
+                console.error('Check deployment status loop timeout.')
+                return false
+            }
+
+            function delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            await delay(7000)
+
+            // fetch config.json file
+            const configFile = await fetch('/config.json');
+            if (configFile.ok) {
+                const j = await configFile.json();
+                if (j.id == id) {
+                    outputText('Update deployed.')
+                }
+                checkDeploymentStatus(id, i+1)
+            } else {
+                console.error('Failed to fetch config.json file')
+                checkDeploymentStatus(id, i+1)
+            }
+        }
+
+        checkDeploymentStatus(JSON.parse(json), 1)
+
+
 
     } catch (e) {
         quitEarly();
