@@ -674,10 +674,9 @@ async function updateGithub() {
             const configFile = await fetch('/config.json');
             if (configFile.ok) {
                 const j = await configFile.json();
-                console.log(j.id);
-                console.log(id)
                 if (j.id == id) {
                     outputText('Update deployed.')
+                    return;
                 }
                 checkDeploymentStatus(id, i+1)
             } else {
