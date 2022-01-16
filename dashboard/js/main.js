@@ -686,7 +686,7 @@ async function updateGithub() {
             }
         }
 
-        checkDeploymentStatus(JSON.parse(json), 1)
+        checkDeploymentStatus(JSON.parse(json).id, 1)
 
 
 
