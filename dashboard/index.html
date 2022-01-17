@@ -203,7 +203,9 @@
                         </div>
                     </div>
                     
-                    <table id="api-endpoint-editor-list" class="table mt-3">
+                    <input type="text" class="form-control mt-2 mb-1" placeholder="Search..." onkeyup="searchEPList(this)">
+
+                    <table id="api-endpoint-editor-list" class="table">
                         <thead>
                             <tr>
                                 <th>URL</th>
@@ -294,6 +296,27 @@
         if (Cookies.get('open-server-config') === '1') {
             openServerConfig()
             Cookies.remove('open-server-config')
+        }
+
+        function searchEPList(input) {
+            const filter = input.value.toUpperCase()
+            const table = $('#api-endpoint-editor-list')
+            const tr = table.querySelectorAll('tr')
+            tr.forEach((row, index) => {
+                const td = row.querySelectorAll('td')
+                if (index === 0) return
+                let found = false
+                td.forEach(cell => {
+                    if (cell.innerText.toUpperCase().indexOf(filter) > -1) {
+                        found = true
+                    }
+                })
+                if (found) {
+                    row.style.display = ''
+                } else {
+                    row.style.display = 'none'
+                }
+            })
         }
     </script>
 

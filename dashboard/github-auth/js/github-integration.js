@@ -125,9 +125,9 @@ function eraseIntegration() {
 }
 
 function searchRepoList(input) {
-    var filter = input.value.toUpperCase();
-    var ul = input.parentNode.getElementsByTagName('ul')[0];
-    var li = ul.getElementsByTagName('li');
+    const filter = input.value.toUpperCase();
+    const ul = input.parentNode.getElementsByTagName('ul')[0];
+    const li = ul.getElementsByTagName('li');
 
     let displayed = 0;
     for (let i = 0; i < li.length; i++) {
