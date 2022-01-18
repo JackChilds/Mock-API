@@ -48,6 +48,11 @@ export function getResponseFromConfig(req, res) {
                         res.send(api.response.data)
                     else if (api.response.type === 'redirect')
                         res.redirect(api.response.data)
+                    else if (api.response.type === 'processor') {
+                        import handler from api.response.data
+                        handler(req, res, pathname.slice(4))
+                    }
+                        
                     
                     hasResponded = true
                 }
