@@ -31,7 +31,7 @@ export function getResponseFromConfig(req, res) {
     let hasResponded = false
     Object.keys(config.api).forEach(ep => {
         if (ep != pathname.slice(4)) return
-        config.api[ep].forEach(api => {
+        config.api[ep].forEach(async api => {
             if (api.method === req.method) {
                 let valid = true;
                 Object.keys(api.queryData).forEach(key => {
@@ -50,10 +50,8 @@ export function getResponseFromConfig(req, res) {
                         res.redirect(api.response.data)
                     else if (api.response.type === 'custom-processor') {
                         console.log(`processors/${api.response.data}`)
-                        import (`./processors/${api.response.data}`)
-                        .then(m => {
-                            m.default(req, res, pathname.slice(4))
-                        })
+                        const m = await import(`processors/${api.response.data}`)
+                        m.default(req, res, pathname.slice(4))
                     }
                         
                     
