@@ -50,7 +50,7 @@ export function getResponseFromConfig(req, res) {
                         res.redirect(api.response.data)
                     else if (api.response.type === 'custom-processor') {
                         console.log(`processors/${api.response.data}`)
-                        const m = await import('./processors/example_processor.js')
+                        const m = await import('processors/example_processor.js')
                         m.default(req, res, pathname.slice(4))
                     }
                         
