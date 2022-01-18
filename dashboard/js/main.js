@@ -196,7 +196,7 @@ function addNewURL(btn) {
         }
     }
 
-    if (urlConfig.response.type === 'redirect') {
+    if (urlConfig.response.type === 'redirect' || urlConfig.response.type === 'custom-processor') {
         urlConfig.response.data = $('#api-endpoint-editor-res-input').value
     }
 
@@ -320,7 +320,7 @@ function editURL(endpoint, isDuplicated=false) {
     $('#api-endpoint-editor-response-type').value = urlConfig.response.type;
     changeAPIEndpointResponseLanguage($('#api-endpoint-editor-response-type'))
     newURLEditor.setValue(urlConfig.response.data);
-    if ($('#api-endpoint-editor-response-type').value === 'redirect') {
+    if ($('#api-endpoint-editor-response-type').value === 'redirect' || $('#api-endpoint-editor-response-type').value === 'custom-processor') {
         $('#api-endpoint-editor-res-input').value = urlConfig.response.data;
     }
 }
@@ -361,14 +361,19 @@ function updateURLTable() {
 updateURLTable()
 
 function changeAPIEndpointResponseLanguage(select) {
-    if (select.value === 'redirect') {
+    if (select.value === 'redirect' || select.value === 'custom-processor') {
         $('#api-endpoint-editor-ace-parent').style.display = 'none'
         $('#api-endpoint-editor-res-parent').style.display = 'block'
 
-        $('#api-endpoint-editor-res-input').setAttribute('type', 'url')
-        $('#api-endpoint-editor-res-input').setAttribute('placeholder', 'https://example.com')
+        $('#api-endpoint-editor-res-input').setAttribute('type', select.value === 'redirect' ? 'url' : 'text')
+        $('#api-endpoint-editor-res-input').setAttribute('placeholder', select.value === 'redirect' ? 'https://example.com' : 'example_processor.js')
+
+        $('#api-endpoint-editor-response-status').setAttribute('disabled', 'disabled')
+
         return
     }
+
+    $('#api-endpoint-editor-response-status').removeAttribute('disabled')
 
     $('#api-endpoint-editor-ace-parent').style.display = 'block'
     $('#api-endpoint-editor-res-parent').style.display = 'none'
