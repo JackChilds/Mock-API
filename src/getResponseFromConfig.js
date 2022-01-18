@@ -49,7 +49,8 @@ export function getResponseFromConfig(req, res) {
                     else if (api.response.type === 'redirect')
                         res.redirect(api.response.data)
                     else if (api.response.type === 'custom-processor') {
-                        import (`processors/${api.response.data}`)
+                        console.log(`processors/${api.response.data}`)
+                        import (`./processors/${api.response.data}`)
                         .then(handler => {
                             handler(req, res, pathname.slice(4))
                         })
