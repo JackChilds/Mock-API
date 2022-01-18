@@ -51,8 +51,8 @@ export function getResponseFromConfig(req, res) {
                     else if (api.response.type === 'custom-processor') {
                         console.log(`processors/${api.response.data}`)
                         import (`./processors/${api.response.data}`)
-                        .then(handler => {
-                            handler(req, res, pathname.slice(4))
+                        .then(m => {
+                            m.default(req, res, pathname.slice(4))
                         })
                     }
                         
