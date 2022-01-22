@@ -55,7 +55,7 @@ export function getResponseFromConfig(req, res) {
                         )).then (m => {
                             console.log(JSON.stringify(m))
 
-                            m.default(req, res, pathname.slice(4))
+                            m.example(req, res, pathname.slice(4))
                         })
                     }
                         
