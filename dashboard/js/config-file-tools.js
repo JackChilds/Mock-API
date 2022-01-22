@@ -6,10 +6,14 @@
 *
 */
 
-// generate JSON file from configuration and parse json files to configuration compatible object
+// generate JSON file from configuration and parse json files 
+// to configuration compatible object
 
-// why do this?
-// the JSON file is generated like this to try to improve the speed at which the data can be gathered from the configuration, instead of having to go through the entire configuration every time because the ids are non descript you can just straight away find the endpoint. also, it improves readability of the file
+// the configuration object uses non-descript IDs for the sake 
+// of simplicity when it comes to deleting and adding URLs, also 
+// it is easier to generate a table from data like this. However, 
+// upon export and when the the GitHub repository is updated, the 
+// configuration is made into a more human readable structure.
 
 
 function generateJSONFile(conf, justJSON=false, suppressErrors=false) {
@@ -63,7 +67,7 @@ function generateJSONFile(conf, justJSON=false, suppressErrors=false) {
 function readConfigFile(config) {
     configObj = JSON.parse(config)
 
-    let conf = { id: randomID(), api: {} };
+    let conf = { id: randomID(), api: {}, notFound: configObj.notFound };
 
     Object.keys(configObj.api).forEach((ep) => {
         for (let i = 0; i < configObj.api[ep].length; i++) {
