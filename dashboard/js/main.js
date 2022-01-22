@@ -366,7 +366,7 @@ function changeAPIEndpointResponseLanguage(select) {
         $('#api-endpoint-editor-res-parent').style.display = 'block'
 
         $('#api-endpoint-editor-res-input').setAttribute('type', select.value === 'redirect' ? 'url' : 'text')
-        $('#api-endpoint-editor-res-input').setAttribute('placeholder', select.value === 'redirect' ? 'https://example.com' : 'example_processor.js')
+        $('#api-endpoint-editor-res-input').setAttribute('placeholder', select.value === 'redirect' ? 'https://example.com' : 'example_processor.mjs')
 
         $('#api-endpoint-editor-response-status').setAttribute('disabled', 'disabled')
 
