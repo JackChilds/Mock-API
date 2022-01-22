@@ -1,7 +1,5 @@
 # Processors
-Place custom 'processors' in here to be used with Mock API.
-
-Use processors to extend the functionality of Mock API, you are also able to distribute your extension to users with extension integration links.
+Processors can be used to extend the functionality of Mock API; place your processors in this directory in order for them to be used with Mock API.
 
 Your processor function will take 3 arguments: the HTTP request and response objects as well as the endpoint that is being used. Read the [Vercel documentation](https://vercel.com/docs/runtimes#official-runtimes/node-js) for more info.
 
@@ -17,7 +15,6 @@ export default function handler(req, res, endpoint)
 {
     res.status(200)
     res.send(`The endpoint is: ${endpoint}.`)
-    res.send('Read the docs for more information on how to create your own custom processor.')
 }
 ```
 
