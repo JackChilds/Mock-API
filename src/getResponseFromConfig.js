@@ -49,7 +49,7 @@ export function getResponseFromConfig(req, res) {
                     else if (api.response.type === 'redirect')
                         res.redirect(api.response.data)
                     else if (api.response.type === 'custom-processor') {
-                        const m = await import('../../../src/processors/example_processor.js')
+                        const m = await import(join(__dirname, 'processors/example_processor.js'))
                         m.default(req, res, pathname.slice(4))
                     }
                         
