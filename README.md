@@ -21,7 +21,11 @@ By default, the configuration contains some example endpoints, you can view thes
     - `{ "message": "It works!" }`
  - api/example/processor
   - GET
-  - Uses the example processor module to produce a response
+  - Uses the `example_processor.mjs` processor to produce a response
+- api/example/processor2
+  - GET
+  - Requires a 'name' parameter to be sent
+  - Uses the `example2.mjs` processor to produce a response 
 - api/example/redirect
   - GET
   - Redirects you to a random image using [Lorem Picsum](https://picsum.photos/)
