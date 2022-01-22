@@ -16,7 +16,8 @@ Quickly create Mock API responses and deploy them to Vercel.
 4. Follow the onscreen prompt to integrate with you GitHub account
 5. Done!
 
-By default, the configuration contains some example endpoints, you can view these by navigating to the dashboard and opening the server configuration or by referencing below.
+### Default Configuration
+The configuration contains some example endpoints, you can view these by navigating to the dashboard and opening the server configuration or by referencing below.
 - api/test:
   - Methods
     - GET
