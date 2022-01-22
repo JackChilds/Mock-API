@@ -56,8 +56,6 @@ export function getResponseFromConfig(req, res) {
                             m.default(req, res, pathname.slice(4))
                         })
                     }
-                        
-                    
                     hasResponded = true
                 }
             }

@@ -12,10 +12,14 @@ Code should be written in serverless Node.js and should export a default functio
 **E.g.**
 
 ```js
-// example_processor.js
-export default function example(req, res, endpoint)
+// example_processor.mjs
+export default function handler(req, res, endpoint)
 {
     res.status(200)
-    res.send(`The endpoint is: ${endpoint}`)
+    res.send(`The endpoint is: ${endpoint}.`)
+    res.send('Read the docs for more information on how to create your own custom processor.')
 }
 ```
+
+## Using processors in the dashboard
+In the URL editor change the 'output response data as' field to 'custom processor', then in the field above input the path to the module relative to the `processors/` directory.
