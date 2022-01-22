@@ -4,12 +4,14 @@ export default function handler(req, res, endpoint) {
     // otherwise say access denied
     const nameParameter = req.query.name
 
+    console.log(nameParameter)
+
     if (nameParameter === undefined) {
         res.status(400).json({
             message: 'Missing name parameter'
         })
     }
-    
+
     if (nameParameter.toLowerCase().startsWith('j')) {
         res.status(200)
         res.send(`Hello, ${nameParameter}!`)
