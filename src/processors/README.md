@@ -31,8 +31,9 @@ export default function handler(req, res, endpoint) {
         res.status(400).json({
             message: 'Missing name parameter'
         })
+        return
     }
-    
+
     if (nameParameter.toLowerCase().startsWith('j')) {
         res.status(200)
         res.send(`Hello, ${nameParameter}!`)
