@@ -346,6 +346,12 @@ function updateURLTable() {
             </td>
         </tr>`;
     })
+    
+    // Force the update of the URL table search by
+    // firing an event to the window that is received by a
+    // script that can access the searchEPList function.
+
+    window.dispatchEvent(new Event('update-url-table-search'));
 }
 
 updateURLTable()
