@@ -3,6 +3,13 @@ export default function handler(req, res, endpoint) {
     // Say hello if the name parameter begins with 'j', 
     // otherwise say access denied
     const nameParameter = req.query.name
+
+    if (nameParameter === undefined) {
+        res.status(400).json({
+            message: 'Missing name parameter'
+        })
+    }
+    
     if (nameParameter.toLowerCase().startsWith('j')) {
         res.status(200)
         res.send(`Hello, ${nameParameter}!`)
