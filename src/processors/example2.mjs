@@ -4,7 +4,7 @@ export default function handler(req, res, endpoint) {
     // otherwise say access denied
     const nameParameter = req.query.name
 
-    console.log(nameParameter)
+    console.log(typeof nameParameter)
 
     if (nameParameter === undefined) {
         res.status(400).json({
