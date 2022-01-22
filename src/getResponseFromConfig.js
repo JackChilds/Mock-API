@@ -54,6 +54,8 @@ export function getResponseFromConfig(req, res) {
                                 api.response.data
                         )).then (m => {
                             m.default(req, res, pathname.slice(4))
+                        }).catch (err => {
+                            console.log(err)
                         })
                     }
                         
