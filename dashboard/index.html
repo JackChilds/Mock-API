@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <script>
-        // Vercel behaves weirdly when the page is loaded without a final slash, e.g. someurl/dashboard instead of someurl/dashboard/
-        
+        // Vercel behaves weirdly when the page is loaded without 
+        // a trailing slash, e.g. someurl/dashboard instead of 
+        // someurl/dashboard/
         if (!window.location.pathname.endsWith('/')) {
             window.location.href += '/'
         }
