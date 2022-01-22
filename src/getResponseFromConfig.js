@@ -53,9 +53,7 @@ export function getResponseFromConfig(req, res) {
                                 __dirname, 'processors', 
                                 api.response.data
                         )).then (m => {
-                            console.log(JSON.stringify(m))
-
-                            m.example(req, res, pathname.slice(4))
+                            m.default(req, res, pathname.slice(4))
                         })
                     }
                         
