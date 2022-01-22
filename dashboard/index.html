@@ -295,6 +295,9 @@
             })
         }
 
+        // navigate to the server configuration page if cookie is
+        // set used when GitHub update is completed and user chooses 
+        // to go to the dashboard
         if (Cookies.get('open-server-config') === '1') {
             openServerConfig()
             Cookies.remove('open-server-config')

@@ -28,17 +28,6 @@ function randomID() {
     return Date.now().toString(16) + Math.random().toString(16).substring(2,18);
 }
 
-function endpointToID(endpoint) {
-    let k;
-    Object.keys(configuration['api']).forEach(function(key) {
-        if (configuration['api'][key].endpoint == endpoint) {
-            k = key;
-            return;
-        }
-    })
-    return k
-}
-
 function validateAPIUrl(url) {
     let urlIsValid = true;
     if (url.includes('?')) {
@@ -290,18 +279,19 @@ function updateNewURLQueryDataRow() {
 
 updateNewURLQueryDataRow();
 
-function deleteURL(endpoint) {
-    endpoint = endpointToID(endpoint);
-    delete configuration['api'][endpoint];
+function deleteURL(i) {
+    delete configuration['api'][i];
     updateURLTable();
 } 
 
-function editURL(endpoint, isDuplicated=false) {
+function editURL(i, isDuplicated=false) {
     newURL($('#new-url-editor-btn'));
 
-    idBeingEdited = isDuplicated ? "new" : endpointToID(endpoint)
+    const endpoint = configuration['api'][i].endpoint;
 
-    const urlConfig = configuration['api'][endpointToID(endpoint)];
+    idBeingEdited = isDuplicated ? "new" : i
+
+    const urlConfig = configuration['api'][i];
     $('#api-endpoint-editor-input').value = endpoint.slice(4);
     $('#api-endpoint-editor-method').value = urlConfig.method;
 
@@ -346,13 +336,13 @@ function updateURLTable() {
             <td>${e.method}</td>
             <td>${shorternQueryData(JSON.stringify(e.queryData))}</td>
             <td>
-                <button class="btn me-2" onclick="editURL('${e.endpoint}')">
+                <button class="btn me-2" onclick="editURL('${x}')">
                     <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn me-2" onclick="editURL('${e.endpoint}', true)"> 
+                <button class="btn me-2" onclick="editURL('${x}', true)"> 
                     <i class="bi bi-files"></i>
                 </button>
-                <button class="btn" onclick="deleteURL('${e.endpoint}')"><i class="bi bi-trash"></i></button>
+                <button class="btn" onclick="deleteURL('${x}')"><i class="bi bi-trash"></i></button>
             </td>
         </tr>`;
     })
