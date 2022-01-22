@@ -8,8 +8,9 @@ Quickly create Mock API responses and deploy them to Vercel.
 - Built in GitHub integration
 - Extendable functionality through [processors](src/processors)
 
-## Installation
+**[Demo](https://mock-api-example.vercel.app)**
 
+## Installation
 1. Fork this repository to your own account
 2. Deploy the forked project to [Vercel](https://vercel.com)
 3. Navigate to the deployment URL in your browser
@@ -25,18 +26,22 @@ The configuration contains some example endpoints, you can view these by navigat
     - PUT
     - DELETE
     - PATCH
-   - Response
+  - Response
     - `{ "message": "It works!" }`
- - api/example/processor
+  - [Demo](https://mock-api-example.vercel.app/api/test) 
+- api/example/processor
   - GET
-  - Uses the `example_processor.mjs` processor to produce a response
+  - Uses the [`example_processor.mjs`](src/processors/example_processor.mjs) processor to produce a response
+  - [Demo](https://mock-api-example.vercel.app/api/example/processor)
 - api/example/processor2
   - GET
   - Requires a 'name' parameter to be sent
-  - Uses the `example2.mjs` processor to produce a response 
+  - Uses the [`example2.mjs`](src/processors/example2.mjs) processor to produce a response 
+  - [Demo](https://mock-api-example.vercel.app/api/example/processor2?name=jack)
 - api/example/redirect
   - GET
   - Redirects you to a random image using [Lorem Picsum](https://picsum.photos/)
+  - [Demo](https://mock-api-example.vercel.app/api/example/redirect)
 
 ## Advanced Usage
 **Custom Processors**: See the [custom processors guide](src/processors) README.
