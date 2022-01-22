@@ -1,5 +1,12 @@
 # Mock-API
-Quickly create Mock API responses and deploy them to Vercel with serverless technologies.
+Quickly create Mock API responses and deploy them to Vercel.
+
+#### Why use Mock API?
+- Use your Mock API from anywhere because it is hosted online
+- Uses serverless technologies so it can be deployed to [Vercel for free](https://vercel.com/pricing)
+- Easy to navigate UI
+- Built in GitHub integration
+- Extendable functionality through [processors](src/processors)
 
 ## Installation
 
