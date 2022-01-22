@@ -20,6 +20,7 @@ export default function handler(req, res, endpoint)
 
 ### Example 2
 **Note**: if you require dynamic query data (where you don't know what the contents of a parameter will be until runtime), don't set query data in the dashboard.
+The example below requires dynamic query data.
 ```js
 // example2.mjs
 export default function handler(req, res, endpoint) {
