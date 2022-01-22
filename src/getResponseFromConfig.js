@@ -56,8 +56,6 @@ export function getResponseFromConfig(req, res) {
                             console.log(JSON.stringify(m))
 
                             m.default(req, res, pathname.slice(4))
-                        }).catch (err => {
-                            console.log(err)
                         })
                     }
                         
