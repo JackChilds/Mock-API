@@ -65,9 +65,9 @@ function generateJSONFile(conf, justJSON=false, suppressErrors=false) {
 }
 
 function readConfigFile(config) {
-    configObj = JSON.parse(config)
+    const configObj = JSON.parse(config)
 
-    let conf = { id: randomID(), api: {}, notFound: configObj.notFound };
+    const conf = { id: randomID(), api: {}, notFound: configObj.notFound };
 
     Object.keys(configObj.api).forEach((ep) => {
         for (let i = 0; i < configObj.api[ep].length; i++) {
