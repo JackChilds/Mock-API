@@ -47,3 +47,6 @@ export default function handler(req, res, endpoint) {
 
 ## Using processors in the dashboard
 In the URL editor change the 'output response data as' field to 'custom processor', then in the field above input the path to the module relative to the `processors/` directory.
+
+## Tips for developing processors
+When developing a processor you may get frustrated at having to wait for the project to get re-deployed on Vercel's servers each time you make a change, to fix this, simply run  the project locally with the [Vercel CLI](https://vercel.com/cli). **Important**: some features will not work locally as your local version will not update when your GitHub repository does.
