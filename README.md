@@ -8,7 +8,7 @@ Quickly create Mock API responses and deploy them to Vercel.
 - Built in GitHub integration
 - Extendable functionality through [processors](src/processors)
 
-**[Demo](https://mock-api-example.vercel.app)**
+**[Demo](https://mock-api-example.vercel.app)** | **[Original Repository](https://github.com/JackChilds/Mock-API)**
 
 ## Installation
 1. Fork this repository to your own account
